@@ -42,8 +42,8 @@ def applySettings():
     subprocess.Popen('%s\%s' % (OverDriveFolder, OverDriveCommand), cwd=OverDriveFolder)
     
     print 'Applying GPU memory strap'
-    sendSlack('%s applying GPU memory tweak settings', % (BoxName))
-    subprocess.Popen('%s\%s' % (MemTweakFolder, MemTweakCommand), cwd=MemTweakFolder)
+    sendSlack('%s applying GPU memory tweak settings' % (BoxName))
+    subprocess.Popen('%s\%s' % (MemTweakFolder, MemTweakCommand), cwd=MemTweakFolder, shell=True)
     
     return True
 
