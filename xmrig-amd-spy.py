@@ -17,8 +17,15 @@ MinerRemoteAddress = 'http://127.0.0.1:8181'
 
 MinHashRate = "8400";
 
+# You need to download and setup OverdriveNTool
+# the example is for 6 RXVega56 and using OverdriveNTool configuration file: Vega56N
 OverDriveFolder = 'C:\\Users\\Username\\Desktop\\Miner'
 OverDriveCommand = 'OverdriveNTool.exe -r1 -r2 -r3 -r4 -r5 -r6 -p1Vega56N -p2Vega56N -p3Vega56N -p4Vega56N -p5Vega56N -p6Vega56N'
+
+# You need to download and install WinAMDTweak
+# This example timer is based on Sapphire RXVega56 Nitro+ Hynix Memory, soft PP table and set at 1480/815, 860/815, power -20%
+MemTweakFolder = 'C:\\Users\Username\Desktop\Miner'
+MemTweakCommand = 'WinAMDTweak.exe --rcdrd 19 --rcdwr 4 --rc 35 --rp 14 --rrds 4 --rrdl 5 --rfc 148 --REF 15600'
 
 SlackUser="slack_username"
 SlackChannel="#slack_channel"
@@ -30,9 +37,15 @@ SlackToken="slack_token"
 '''
 def applySettings():
     print 'Applying GPU settings'
+    
     sendSlack('%s applying GPU settings' % (BoxName))
-    return subprocess.Popen('%s\%s' % (OverDriveFolder, OverDriveCommand), cwd=OverDriveFolder)
-    #return True
+    subprocess.Popen('%s\%s' % (OverDriveFolder, OverDriveCommand), cwd=OverDriveFolder)
+    
+    print 'Applying GPU memory strap'
+    sendSlack('%s applying GPU memory tweak settings', % (BoxName))
+    subprocess.Popen('%s\%s' % (MemTweakFolder, MemTweakCommand), cwd=MemTweakFolder)
+    
+    return True
 
 
 '''
@@ -129,7 +142,7 @@ def main():
           
         try:
             request = requests.get(MinerRemoteAddress)
-            if request.status_code is not 200:
+            if not request.status_code or request.status_code is not 200:
                 sendSlack('Restarting miner because failed to connect to miner properly')
                 restarted += 1
                 restart()
@@ -167,7 +180,7 @@ def main():
                         minute = 0;
                         
 
-            if request.status_code is not 200:
+            if not request.status_code or request.status_code is not 200:
                 sendSlack('Restarting miner due to invalid server request detected')
                 restart()
             
